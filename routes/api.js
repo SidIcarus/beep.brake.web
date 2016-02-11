@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
-	
-var conString = "postgres://postgres:beep.brake.db@localhost:5433/beep.brake.web";
-console.log(conString);
+
+var conString = "postgres://postgres:1234@localhost/postgres";
 
 router.get('/', function(req, res) {
   console.log("This got hit");

@@ -19,8 +19,6 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var conString = "postgres://postgres:1234@localhost/postgres";
-
 var server = http.createServer(app);
 
 /**
