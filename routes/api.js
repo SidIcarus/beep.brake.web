@@ -1,9 +1,20 @@
 var express = require('express');
 var router = express.Router();
+var pg = require('pg');
+	
+var conString = "postgres://postgres:beep.brake.db@localhost:5433/beep.brake.web";
+console.log(conString);
 
-/* GET users listing. */
 router.get('/', function(req, res) {
   console.log("This got hit");
+
+  pg.connect(conString, function(err, client, done) {
+  	if (err) {
+  		return console.error('error fetching client from pool', err);
+  	}
+  	console.log("Connected");
+  })	
+
   res.json({message: "Yeah. API"});
 });
 
