@@ -44,7 +44,7 @@ CREATE TABLE stringsensordata(
 	value text
 );
 
-CREATE TABLE user(
+CREATE TABLE webuser(
 	id serial PRIMARY KEY,
 	username text UNIQUE,
 	password text,
