@@ -39,16 +39,54 @@ router.post('/newDevice', function(req, res) {
 });
 
 router.post('/newEvent', function(req,res) {
-  console.log(req.body);
+  var newEvent = req.body;
   if (!req.body.deviceId) {
       return res.status(400).send({"status": "error", "message": "No deviceId provided"})
   }
 
-  //check DB for existing deviceId
+  pg.connect(conString, function(err, client, done) {
+    //check DB for existing deviceId
+    client.query({
+      text   : 'SELECT EXISTS(SELECT 1 FROM appuser WHERE deviceid=$1)',
+      name   : "Unique Check",
+      values : [req.body.deviceId]
+    }, function(err, result) {
+      if (result.rows[0].exists) {
+        //Parse and store event in db
+        console.log("Add event");
+        var d = new Date();
+        var n = d.getTime();
 
-  //Parse and store event in db
+        var u = new Date(n);
+        client.query({ 
+          text   : "INSERT INTO event VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5) RETURNING id",
+          name   : "Event Creation",
+          values : [newEvent.deviceId, newEvent.hardware, newEvent.appversion, newEvent.osversion, u]
+        }, function(err, results) {
+          console.log(err);
+          console.log(results.rows[0].id);
+          var p = new Date(new Date().getTime());
+          for (var s = 0; s < newEvent.segments.length; s++) {
+            var segment = newEvent.segments[s];
+            client.query({ 
+              text   : "INSERT INTO segment VALUES (DEFAULT, (SELECT id FROM event WHERE id=$1), $2)",
+              name   : "Segment Creation",
+              values : [results.rows[0].id, p/*segment.segtime*/]
+            })
+          }
+        }) 
 
-  res.status(200).send({"message": "Success"});
+
+        return res.status(201).send({"message": "Success"});
+      } else {
+        done();
+        return res.status(400).send({"message" : "Device not registered"})
+      }
+    });
+  });
+  
+
+  
 });
 
 module.exports = router;
