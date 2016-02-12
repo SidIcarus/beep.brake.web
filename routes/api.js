@@ -22,6 +22,7 @@ router.post('/newDevice', function(req, res) {
       values : [req.body.deviceId]
     }, function(err, result) {
       if (result.rows[0].exists) {
+        done();
         return res.status(400).send({"message" : "Device already registered"})
       } else {
         client.query({
@@ -30,6 +31,7 @@ router.post('/newDevice', function(req, res) {
           values : [req.body.deviceId] 
         }, function(err, result) {
           res.status(201).send({"message" : "Device Registered"})
+          done();
         });
       }
     });  
