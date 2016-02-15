@@ -40,6 +40,7 @@ router.post('/newDevice', function(req, res) {
 
 router.post('/newEvent', function(req,res) {
   var newEvent = req.body;
+  console.log(req.body.deviceId)
   if (!req.body.deviceId) {
       return res.status(400).send({"status": "error", "message": "No deviceId provided"})
   }
@@ -51,33 +52,66 @@ router.post('/newEvent', function(req,res) {
       name   : "Unique Check",
       values : [req.body.deviceId]
     }, function(err, result) {
+      //Continue if device is registered
       if (result.rows[0].exists) {
+
         //Parse and store event in db
         console.log("Add event");
         var d = new Date();
         var n = d.getTime();
-
         var u = new Date(n);
+
         client.query({ 
           text   : "INSERT INTO event VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5) RETURNING id",
           name   : "Event Creation",
           values : [newEvent.deviceId, newEvent.hardware, newEvent.appversion, newEvent.osversion, u]
         }, function(err, results) {
-          console.log(err);
-          console.log(results.rows[0].id);
+          //console.log(results.rows[0].id);
           var p = new Date(new Date().getTime());
           for (var s = 0; s < newEvent.segments.length; s++) {
             var segment = newEvent.segments[s];
             client.query({ 
-              text   : "INSERT INTO segment VALUES (DEFAULT, (SELECT id FROM event WHERE id=$1), $2)",
+              text   : "INSERT INTO segment VALUES (DEFAULT, (SELECT id FROM event WHERE id=$1), $2) RETURNING id",
               name   : "Segment Creation",
               values : [results.rows[0].id, p/*segment.segtime*/]
+            }, function(err, results) {
+              for (var i = 0; i < segment.data.length; i++) {
+                var segData = segment.data[i];
+                switch(typeof(segData.value)) {
+                  case 'boolean':
+                    console.log("bool");
+                    client.query({
+                      text   : "INSERT INTO boolsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
+                      name   : "Bool Sensor Data Creation",
+                      values : [results.rows[0].id, segData.key, segData.value]
+                    })
+                    break;
+                  case 'number':
+                    console.log("NUMBER");
+                    client.query({
+                      text   : "INSERT INTO numsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
+                      name   : "Num Sensor Data Creation",
+                      values : [results.rows[0].id, segData.key, segData.value]
+                    })
+                    break;
+                  case 'string':
+                    console.log("STRING");
+                    client.query ({
+                      text   : "INSERT INTO stringsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
+                      name   : "String Sensor Data Creation",
+                      values : [results.rows[0].id, segData.key, segData.value]
+                    })
+                    break;
+                  default:
+                    console.log("Invalid type");
+                }
+              }
+
+              done();
+              return res.status(201).send({"message": "Success"});
             })
           }
         }) 
-
-
-        return res.status(201).send({"message": "Success"});
       } else {
         done();
         return res.status(400).send({"message" : "Device not registered"})
