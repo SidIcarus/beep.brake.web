@@ -7,7 +7,7 @@ var conString = "postgres://postgres:1234@localhost/postgres";
 //Stores new Device Id
 router.post('/newDevice', function(req, res) {
   if (!req.body.deviceId) {
-      return res.status(400).send({"status": "error", "message": "No deviceId provided"})
+      return res.status(400).send({"status": "error", "message": "No deviceid provided"})
   }
 
   pg.connect(conString, function(err, client, done) {
@@ -19,7 +19,7 @@ router.post('/newDevice', function(req, res) {
     client.query({
       text   : 'SELECT EXISTS(SELECT 1 FROM appuser WHERE deviceid=$1)',
       name   : "Unique Check",
-      values : [req.body.deviceId]
+      values : [req.body.deviceid]
     }, function(err, result) {
       if (result.rows[0].exists) {
         done();
@@ -40,17 +40,16 @@ router.post('/newDevice', function(req, res) {
 
 router.post('/newEvent', function(req,res) {
   var newEvent = req.body;
-  console.log(req.body.deviceId)
-  if (!req.body.deviceId) {
+  if (!req.body.deviceid) {
       return res.status(400).send({"status": "error", "message": "No deviceId provided"})
   }
 
   pg.connect(conString, function(err, client, done) {
-    //check DB for existing deviceId
+    //check DB for existing deviceid
     client.query({
       text   : 'SELECT EXISTS(SELECT 1 FROM appuser WHERE deviceid=$1)',
       name   : "Unique Check",
-      values : [req.body.deviceId]
+      values : [req.body.deviceid]
     }, function(err, result) {
       //Continue if device is registered
       if (result.rows[0].exists) {
@@ -64,7 +63,7 @@ router.post('/newEvent', function(req,res) {
         client.query({ 
           text   : "INSERT INTO event VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5) RETURNING id",
           name   : "Event Creation",
-          values : [newEvent.deviceId, newEvent.hardware, newEvent.appversion, newEvent.osversion, u]
+          values : [newEvent.deviceid, newEvent.hardware, newEvent.appversion, newEvent.osversion, u]
         }, function(err, results) {
           //console.log(results.rows[0].id);
           var p = new Date(new Date().getTime());
@@ -118,9 +117,37 @@ router.post('/newEvent', function(req,res) {
       }
     });
   });
+});
   
+router.post('/login', function(req, res) {
+  res.status(200).send();
+});
 
-  
+router.get('/events', function(req, res) {
+  pg.connect(conString, function(err, client, done) {
+    client.query ({
+      text   : "SELECT * FROM event ORDER BY id",
+      name   : "Get Events"
+    }, function(err, results) {
+      console.log(results.rows)
+      done();
+      res.status(200).json(results.rows);
+    });
+  });
+});
+
+router.get('/event/:id', function(req, res) {
+  pg.connect(conString, function(err, client, done) {
+    client.query ({
+      text   : "SELECT * FROM event INNER JOIN segment ON (event.id = segment.eventid)WHERE event.id=$1",
+      name   : "Get Event by id",
+      values : [req.params.id]
+    }, function(err, results) {
+      console.log(err);
+      done();
+      res.status(200).json(results.rows);
+    });
+  });
 });
 
 module.exports = router;
