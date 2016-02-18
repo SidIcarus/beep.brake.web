@@ -6,7 +6,7 @@ var conString = "postgres://postgres:1234@localhost/postgres";
 
 //Stores new Device Id
 router.post('/newDevice', function(req, res) {
-  if (!req.body.deviceId) {
+  if (!req.body.deviceid) {
       return res.status(400).send({"status": "error", "message": "No deviceid provided"})
   }
 
