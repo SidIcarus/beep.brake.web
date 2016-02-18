@@ -95,7 +95,6 @@ function segCreate(eventid, segment) {
           return;
         }
 
-        console.log("In callback after segment: " + new Date().getTime());
         for (var i = 0; i < segment.data.length; i++) {
           switch(typeof(segment.data[i].value)) {
             case 'boolean':
