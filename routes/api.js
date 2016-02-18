@@ -114,7 +114,7 @@ function segCreate(eventid, segment) {
                 text   : "INSERT INTO numsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
                 name   : "Num Sensor Data Creation",
                 values : [results.rows[0].id, segment.data[i].key, segment.data[i].value]
-              }. function(err, results) {
+              }, function(err, results) {
                 if (err) {
                   console.log(err);
                 }
