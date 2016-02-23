@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+var async = require('async');
 
 var conString = "postgres://postgres:1234@localhost/postgres";
 
@@ -156,16 +157,39 @@ router.get('/events', function(req, res) {
   });
 });
 
+//Get event segments and sensor data for specific event
 router.get('/event/:id', function(req, res) {
+  var queue = []
+  var segrows = {}
+  segrows.sensordata = []
+
   pg.connect(conString, function(err, client, done) {
     client.query ({
-      text   : "SELECT * FROM event INNER JOIN segment ON (segment.eventid = event.id)WHERE event.id=$1",
+      text   : "SELECT * FROM segment WHERE eventid=$1",
       name   : "Get Event by id",
       values : [req.params.id]
-    }, function(err, results) {
-      console.log(err);
-      done();
-      res.status(200).json(results.rows);
+    }, function(err, segresults) {
+      if (err) {
+        console.log(err);
+        return res.status(400);
+      }
+
+      for (var i = 0; i < segresults.rows.length; i++) {
+        queue.push(client.query.bind(client, "SELECT * FROM numsensordata WHERE segid=$1",[segresults.rows[i].id]));
+        queue.push(client.query.bind(client, "SELECT * FROM boolsensordata WHERE segid=$1",[segresults.rows[i].id]));
+        queue.push(client.query.bind(client, "SELECT * FROM stringsensordata WHERE segid=$1",[segresults.rows[i].id]))
+      }
+
+      async.series(queue, function(err, results) {
+        segrows.segments = segresults.rows;
+        for (var i in results) {
+          for (var j in results[i].rows) {
+            segrows.sensordata.push(results[i].rows[j])
+          }
+        }
+        done();
+        res.status(200).json(segrows);
+      })
     });
   });
 });
