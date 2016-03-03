@@ -6,7 +6,7 @@ controller('mainCtrl', function($scope, $http) {
   }
 
   init = function() {
-  	$http.get("https://localhost:3000/api/events").then(function(res) {
+  	$http.get("/api/events").then(function(res) {
   		$scope.events = res;
   	})
   }
