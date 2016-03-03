@@ -67,7 +67,7 @@ router.post('/newEvent', function(req,res) {
             console.log(err);
             return res.send(400);
           }
-
+          //for each segment insert segment and insert all sensor data
           for (var s = 0; s < newEvent.segments.length; s++) {
             segCreate(results.rows[0].id, newEvent.segments[s]);
           }
@@ -144,13 +144,13 @@ router.post('/login', function(req, res) {
   res.status(200).send();
 });
 
+//Get all events
 router.get('/events', function(req, res) {
   pg.connect(conString, function(err, client, done) {
     client.query ({
       text   : "SELECT * FROM event ORDER BY id",
       name   : "Get Events"
     }, function(err, results) {
-      console.log(results.rows)
       done();
       res.status(200).json(results.rows);
     });
