@@ -10,18 +10,7 @@
       <% include header %>
     </header>
 
-    <div class="panel panel-default col-sm-6 col-sm-offset-3" style="padding:20px">
-    <p>{{test}}</p>
-      <div class="input-group">
-        <label> Username
-        <input type="text" class="form-control" ng-model="username">
-      </div>
-      <div class="input-group">
-        <label> Password
-        <input type="password" class="form-control" ng-model="password">
-      </div>
-      <div class="input-group">
-        <input class="btn btn-primary" type="submit" value="Submit" ng-click="submit()">
-    </div>
+    <div ng-view></div>
+    
   </body>
 </html>  
