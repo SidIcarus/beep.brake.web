@@ -18,4 +18,4 @@ Senior Project for RITs Forward Collision Web Application
 
 4. Start the server
 
-  ``node server``
+  ``npm start || npm start app.js``
