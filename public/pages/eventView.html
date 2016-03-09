@@ -1,0 +1,15 @@
+<div class="col-sm-6">
+	<table class="table table-striped">
+	  <tr ng-repeat="seg in segments" ng-click="segSelect(seg.id)">
+	    <td> {{seg.id}} </td>
+	  </tr>
+	</table>
+</div>
+<div class="col-sm-6 panel">
+	<table class="table col-sm-6">
+	  <tr ng-repeat="sensor in currentSegData">
+	  	<td> {{sensor.key}} </td>
+	  	<td> {{sensor.value}} </td>
+	  </tr>
+	 </table>
+ </div>

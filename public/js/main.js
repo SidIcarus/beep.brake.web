@@ -1,6 +1,7 @@
 var app = angular.module('beep.brake', [
 	'beep.brake.mainCtrl',
 	'beep.brake.dataCtrl',
+	'beep.brake.eventCtrl',
 	'ngRoute'
 	]);
 
@@ -14,6 +15,11 @@ app.config(function($routeProvider) {
 		.when('/dataView', {
 			templateUrl : 'pages/dataView.html',
 			controller  : 'dataCtrl'
+		})
+
+		.when('/dataView/:id', {
+			templateUrl : 'pages/eventView.html',
+			controller  : 'eventCtrl'
 		})
 
 		.otherwise({

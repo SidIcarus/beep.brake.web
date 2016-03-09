@@ -2,7 +2,7 @@
 <label style="padding-left:13.8%"> Time </label>
 <!--<label style="padding-left:26.8%"> Time </label>-->
 <table class="table table-striped">
-  <tr ng-repeat="event in events.data">
+  <tr ng-repeat="event in events.data" ng-click="viewEvent(event.id)">
     <td> {{event.id}}
     <td> {{event.eventdate}}
 </table>
