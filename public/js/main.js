@@ -5,6 +5,14 @@ var app = angular.module('beep.brake', [
 	'ngRoute'
 	]);
 
+var checkLoggedIn = function($http, $location, $rootScope) {
+	if ($rootScope.user) {
+		return true;
+	} else {
+		$location.url('/');
+	}
+}
+
 app.config(function($routeProvider) {
 	$routeProvider
 		.when('/', {
@@ -14,12 +22,18 @@ app.config(function($routeProvider) {
 
 		.when('/dataView', {
 			templateUrl : 'pages/dataView.html',
-			controller  : 'dataCtrl'
+			controller  : 'dataCtrl',
+			resolve     : {	
+				loggedin : checkLoggedIn
+			}
 		})
 
 		.when('/dataView/:id', {
 			templateUrl : 'pages/eventView.html',
-			controller  : 'eventCtrl'
+			controller  : 'eventCtrl',
+			resolve     : {	
+				loggedin : checkLoggedIn
+			}
 		})
 
 		.otherwise({

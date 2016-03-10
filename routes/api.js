@@ -2,8 +2,11 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var async = require('async');
+var dbString = require('../db.js');
+var conString = dbString.dbString;
 
-var conString = "postgres://postgres:1234@localhost/postgres";
+//var conString = "postgres://postgres:beep.brake.db@localhost:5433/beep.brake.web"
+//var conString = "postgres://postgres:1234@localhost/postgres";
 
 //Stores new Device Id
 router.post('/newDevice', function(req, res) {
@@ -139,10 +142,6 @@ function segCreate(eventid, segment) {
   });
 
 }
-  
-router.post('/login', function(req, res) {
-  res.status(200).send();
-});
 
 //Get all events
 router.get('/events', function(req, res) {
