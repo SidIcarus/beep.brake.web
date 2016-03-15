@@ -1,0 +1,35 @@
+<div class="panel panel-default col-sm-4 col-sm-offset-1">
+  <form id="Register">
+    <div>
+      <div class="input-group regForm">
+        <label>Username</label>
+        <input class="form-control" type="text" ng-model="newUser.username">
+      </div>
+      <div class="input-group regForm">
+        <label>Password</label>
+        <input class="form-control" type="password" ng-model="newUser.password">
+      </div>
+      <div class="input-group regForm">
+        <label>Confirm Password</label>
+        <input class="form-control" type="password" ng-model="newUser.confirmPassword"><br>
+      </div>
+      <div class="input-group regForm">
+        <button class="btn btn-primary form-control" ng-click="register()">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="panel pane-default col-sm-4 col-sm-offset-2">
+    <table class="table">
+      <tr>
+        <td> Username </td>
+        <td> Role </td>
+      </tr>
+      <tr ng-repeat="webuser in users">
+        <td> {{webuser.username}} </td>
+        <td> {{webuser.role}} </td>
+        <td> <button class="btn btn-small">Delete</button> </td>
+      </tr>
+    </table>
+</div>

@@ -7,3 +7,17 @@ body {
 a {
   color: #00B7FF;
 }
+
+#Register {
+	padding:0px 20px 20px;
+}
+
+#Register .regForm {
+	margin-top: 15px;
+}
+
+#Register .regSubmit {
+	margin-top: 15px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}

@@ -2,6 +2,7 @@ var app = angular.module('beep.brake', [
 	'beep.brake.mainCtrl',
 	'beep.brake.dataCtrl',
 	'beep.brake.eventCtrl',
+	'beep.brake.regCtrl',
 	'ngRoute'
 	]);
 
@@ -33,6 +34,14 @@ app.config(function($routeProvider) {
 			controller  : 'eventCtrl',
 			resolve     : {	
 				loggedin : checkLoggedIn
+			}
+		})
+		
+		.when('/newUser/', {
+			templateUrl : 'pages/register.html',
+			controller  : 'regCtrl',
+			resolve     : {
+				loggedin: checkLoggedIn
 			}
 		})
 
