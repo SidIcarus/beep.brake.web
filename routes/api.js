@@ -83,6 +83,50 @@ router.post('/newEvent', function(req,res) {
   });
 });
 
+router.post('/register', function(req, res) {
+  pg.connect(conString, function(err, client, done) {
+    if (err) {
+      return console.error('error fetching client from pool', err);
+    }
+
+    var newWebUser = req.body;
+    //Check for unique username
+    client.query({
+      text   : 'SELECT EXISTS(SELECT 1 FROM webuser WHERE username=$1)',
+      name   : 'Webuser Unique check',
+      values : [newWebUser.username]
+    }, function(err, result) {
+      if (err) {
+        done()
+        console.log(err);
+        res.status(500).send({"message": "Internal server error"});
+        return;
+      }
+
+      if (result.rows[0].exists) {
+        done();
+        return res.status(400).send({"message": "User already registered"})
+      } else {
+        console.log("Gonna add someone now");
+        client.query({
+          text   : 'INSERT INTO webuser VALUES(DEFAULT, $1, $2, $3)',
+          name   : 'Webuser Registration',
+          values : [newWebUser.username, newWebUser.password, newWebUser.role]
+        }, function(err, results) {
+          done();
+          if (err) {
+            console.log(err);
+            res.status(500).send({'message': 'Internal server error'});
+          } else {
+            res.status(201).send();
+          }
+        })
+      }
+
+    })
+  })
+})
+  
 function segCreate(eventid, segment) {
   pg.connect(conString, function(err, client, done) {
     client.query({ 
@@ -193,13 +237,30 @@ router.get('/event/:id', function(req, res) {
 router.get('/users/', function(req, res) {
  pg.connect(conString, function(err, client, done) {
   client.query({
-    text : "SELECT username, role FROM webuser",
+    text : "SELECT id, username, role FROM webuser",
     name : "User Query"
   }, function(err, results) {
     done();
     res.status(200).json(results.rows);
   });
  });
+});
+
+router.delete('/user/:id', function(req, res) {
+  pg.connect(conString, function(err, client, done) {
+    client.query({
+      text   : "DELETE FROM webuser WHERE id=$1",
+      name   : "Delete User",
+      values : [req.params.id]
+    }, function(err, results) {
+      if (err) {
+        console.log(err);
+        res.send(500);
+      } else {
+        res.send(200);
+      }
+    });
+  });
 });
 
 module.exports = router;

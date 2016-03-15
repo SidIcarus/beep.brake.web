@@ -1,7 +1,7 @@
 angular.module('beep.brake.dataCtrl', []).
 controller('dataCtrl', function($scope, $http, $location, $rootScope) {
   init = function() {
-  	if ($rootScope.user) {
+  	if ($rootScope.user.role == 'admin') {
   		$scope.$parent.loggedIn = true;
   	}
   	$http.get("/api/events").then(function(res) {

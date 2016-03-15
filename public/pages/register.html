@@ -11,7 +11,14 @@
       </div>
       <div class="input-group regForm">
         <label>Confirm Password</label>
-        <input class="form-control" type="password" ng-model="newUser.confirmPassword"><br>
+        <input class="form-control" type="password" ng-model="newUser.confirmPassword">
+      </div>
+      <div class="input-group regForm">
+        <label>User Role</label><br>
+          <input type="radio" ng-model="newUser.role" value="admin">
+          <label>Admin</label><br>
+          <input type="radio" ng-model="newUser.role" value="user">
+          <label>User</label>
       </div>
       <div class="input-group regForm">
         <button class="btn btn-primary form-control" ng-click="register()">Submit</button>
@@ -29,7 +36,7 @@
       <tr ng-repeat="webuser in users">
         <td> {{webuser.username}} </td>
         <td> {{webuser.role}} </td>
-        <td> <button class="btn btn-small">Delete</button> </td>
+        <td> <button class="btn btn-small" ng-click="delete(webuser.id)">Delete</button> </td>
       </tr>
     </table>
 </div>

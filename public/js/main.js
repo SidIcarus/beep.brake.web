@@ -6,11 +6,19 @@ var app = angular.module('beep.brake', [
 	'ngRoute'
 	]);
 
-var checkLoggedIn = function($http, $location, $rootScope) {
+var checkLoggedIn = function($location, $rootScope) {
 	if ($rootScope.user) {
 		return true;
 	} else {
 		$location.url('/');
+	}
+}
+
+var isAdmin = function($location, $rootScope) {
+	if ($rootScope.user.role == 'admin') {
+		return true;
+	} else {
+		$location.url('/dataView');
 	}
 }
 
@@ -41,7 +49,8 @@ app.config(function($routeProvider) {
 			templateUrl : 'pages/register.html',
 			controller  : 'regCtrl',
 			resolve     : {
-				loggedin: checkLoggedIn
+				loggedin   : checkLoggedIn,
+				checkAdmin : isAdmin
 			}
 		})
 
