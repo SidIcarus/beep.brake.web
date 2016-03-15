@@ -5,9 +5,6 @@ var async = require('async');
 var dbString = require('../db.js');
 var conString = dbString.dbString;
 
-//var conString = "postgres://postgres:beep.brake.db@localhost:5433/beep.brake.web"
-//var conString = "postgres://postgres:1234@localhost/postgres";
-
 //Stores new Device Id
 router.post('/newDevice', function(req, res) {
   if (!req.body.deviceid) {
