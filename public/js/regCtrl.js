@@ -1,5 +1,5 @@
 angular.module('beep.brake.regCtrl', []).
-controller('regCtrl', function($scope, $http, $location) {
+controller('regCtrl', function($scope, $http, $location, $rootScope) {
   $scope.newUser = {};
   $scope.newUser.role = 'user';
   init = function() {
@@ -30,7 +30,7 @@ controller('regCtrl', function($scope, $http, $location) {
 
   $scope.delete = function(id) {
     $scope.delFlag = false;
-    if ($scope.$parent.user.id == id) {
+    if ($rootScope.user.id == id) {
       //Don't allow admins to delete their own account
       $scope.delFlag = true;
       return;
