@@ -13,6 +13,7 @@ var conString = dbString.dbString;
 
 var routes = require('./routes/index');
 var api = require('./routes/api');
+var webapi = require('./routes/webapi')
 
 var app = express();
 
@@ -76,7 +77,8 @@ app.use(session({secret:'beep.secret.brake'}));
 app.use(passport.initialize());
 app.use(passport.session());  
 app.use('/', routes);
-app.use('/api', auth, api);
+app.use('/api', api);
+app.use('/web/api/', auth, webapi);
 
 app.post('/login', passport.authenticate('local'), function(req, res) {
   res.send(req.user);

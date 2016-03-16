@@ -4,7 +4,7 @@ controller('dataCtrl', function($scope, $http, $location, $rootScope) {
   	if ($rootScope.user.role == 'admin') {
   		$scope.$parent.loggedIn = true;
   	}
-  	$http.get("/api/events").then(function(res) {
+  	$http.get("/web/api/events").then(function(res) {
   		$scope.events = res;
   	})
   }

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pg = require('pg');
 var async = require('async');
+var multer = require('multer');
 var dbString = require('../db.js');
 var conString = dbString.dbString;
 

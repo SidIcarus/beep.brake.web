@@ -3,7 +3,7 @@ controller('regCtrl', function($scope, $http, $location, $rootScope) {
   $scope.newUser = {};
   $scope.newUser.role = 'user';
   init = function() {
-  	$http.get("/api/users").then(function(res) {
+  	$http.get("/web/api/users").then(function(res) {
   		$scope.users = res.data;
   	})
   }
@@ -17,7 +17,7 @@ controller('regCtrl', function($scope, $http, $location, $rootScope) {
     } else {
       //hash password
       hashPass = $scope.newUser.password //.hash
-      $http.post('/api/register', {
+      $http.post('/web/api/register', {
         username: $scope.newUser.username,
         password: hashPass,
         role    : $scope.newUser.role
@@ -35,7 +35,7 @@ controller('regCtrl', function($scope, $http, $location, $rootScope) {
       $scope.delFlag = true;
       return;
     }
-    $http.delete("/api/user/" + id).then(function(res) {
+    $http.delete("/web/api/user/" + id).then(function(res) {
       init();
     })
   }
