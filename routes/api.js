@@ -4,6 +4,9 @@ var pg = require('pg');
 var async = require('async');
 var multer = require('multer');
 var dbString = require('../db.js');
+var AdmZip = require('adm-zip');
+var fs = require('fs');
+var path = require('path');
 var conString = dbString.dbString;
 var upload = multer({ dest: './uploads/'});
 
@@ -41,10 +44,11 @@ router.post('/newDevice', function(req, res) {
   });
 });
 
-router.post('/newEvent', function(req,res) {
-  var newEvent = req.body;
-  if (!req.body.deviceid) {
-      return res.status(400).send({"status": "error", "message": "No deviceId provided"})
+//router.post('/newEvent', function(req,res) {
+function newEvent(data, oldfile) {
+  var newEvent = data;
+  if (!newEvent.deviceid) {
+      return {"status": 401, "message": "No deviceId provided"};
   }
 
   pg.connect(conString, function(err, client, done) {
@@ -52,7 +56,7 @@ router.post('/newEvent', function(req,res) {
     client.query({
       text   : 'SELECT EXISTS(SELECT 1 FROM appuser WHERE deviceid=$1)',
       name   : "Unique Check",
-      values : [req.body.deviceid]
+      values : [newEvent.deviceid]
     }, function(err, result) {
       //Continue if device is registered
       if (result.rows[0].exists) {
@@ -62,35 +66,70 @@ router.post('/newEvent', function(req,res) {
         client.query({ 
           text   : "INSERT INTO event VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5) RETURNING id",
           name   : "Event Creation",
-          values : [newEvent.deviceid, newEvent.hardware, newEvent.appversion, newEvent.osversion, new Date(newEvent.eventdate)]
+          values : [newEvent.deviceid, newEvent.hardware, newEvent.appversion, newEvent.osversion, new Date(newEvent.eventdata  )]
         }, function(err, results) {
 
           if (err) {
             console.log(err);
-            return res.send(400);
+            return {"status" : 500};
           }
           //for each segment insert segment and insert all sensor data
           for (var s = 0; s < newEvent.segments.length; s++) {
+            console.log("starting seg");
             segCreate(results.rows[0].id, newEvent.segments[s]);
           }
 
-          done();
-          return res.status(201).send({"message": "Success"});
+          console.log("RENAMING FOLDER");
+          fs.rename("./events/" + oldfile, './events/' + results.rows[0].id, function(err) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+          });
+          return {"status": 201};
+
         }) 
       } else {
         done();
-        return res.status(400).send({"message" : "Device not registered"})
+        return {"message" : "Device not registered", "status" : 401}
       }
     });
   });
-});
+};
   
-router.post('/newFile', upload.single('zipfile'), function(req, res, next) {
-  console.log(req.body);
-  console.log("---------------------------------------------------");
-  console.log(req.file);
+router.post('/newFile', upload.single('file'), function(req, res, next) {
+  var zip = new AdmZip(req.file.path);
+
+  zip.extractAllTo("./events/" + req.file.filename); 
+  fs.readdir("./events/" + req.file.filename, function(err, list) {
+    if (err){
+      console.log(err);
+      return res.status(500);
+    }
+    list.forEach(function (file) {
+      fs.readFile(file, function(err, data) {
+        console.log(file.toString());
+        if (getExtension(file) == 'json') {
+          
+          try {
+            var newJSON = JSON.parse(data);
+          }catch (e) {
+            console.log(e);
+          }
+
+          var result = newEvent(newJSON, req.file.filename) 
+
+        }
+      })
+    })
+  });
+
   res.status(204).end();
 })
+
+function getExtension(filename) {
+  return filename.split('.').pop();
+}
 
 function segCreate(eventid, segment) {
   pg.connect(conString, function(err, client, done) {
@@ -105,13 +144,14 @@ function segCreate(eventid, segment) {
           return;
         }
 
-        for (var i = 0; i < segment.data.length; i++) {
-          switch(typeof(segment.data[i].value)) {
+        for (var i = 0; i < segment.sensordata.length; i++) {
+          console.log("Inserting data");
+          switch(typeof(segment.sensordata[i].value)) {
             case 'boolean':
               client.query({
                 text   : "INSERT INTO boolsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
                 name   : "Bool Sensor Data Creation",
-                values : [results.rows[0].id, segment.data[i].key, segment.data[i].value]
+                values : [results.rows[0].id, segment.sensordata[i].key, segment.sensordata[i].value]
               }, function(err, results) {
                 if (err) {
                   console.log(err);
@@ -122,7 +162,7 @@ function segCreate(eventid, segment) {
               client.query({
                 text   : "INSERT INTO numsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
                 name   : "Num Sensor Data Creation",
-                values : [results.rows[0].id, segment.data[i].key, segment.data[i].value]
+                values : [results.rows[0].id, segment.sensordata[i].key, segment.sensordata[i].value]
               }, function(err, results) {
                 if (err) {
                   console.log(err);
@@ -133,7 +173,7 @@ function segCreate(eventid, segment) {
               client.query ({
                 text   : "INSERT INTO stringsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
                 name   : "String Sensor Data Creation",
-                values : [results.rows[0].id, segment.data[i].key, segment.data[i].value]
+                values : [results.rows[0].id, segment.sensordata[i].key, segment.sensordata[i].value]
               }, function(err, results) {
                 if (err) {
                   console.log(err);
@@ -145,6 +185,7 @@ function segCreate(eventid, segment) {
           }
         }
       })
+    done();
   });
 
 }

@@ -6,6 +6,10 @@ npm-debug.log*
 #db file
 db.js
 
+# data files
+uploads/*
+events/*
+
 # Runtime data
 pids
 *.pid

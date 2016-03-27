@@ -3,7 +3,7 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   $scope.currentSegData = []
   $scope.loggedIn = $rootScope.user;
   init = function() {
-  	$http.get("/api/event/" + $routeParams.id).then(function(res) {
+  	$http.get("/web/api/event/" + $routeParams.id).then(function(res) {
   		$scope.segments   = res.data.segments;
   		$scope.sensorData = res.data.sensordata;
   	})
