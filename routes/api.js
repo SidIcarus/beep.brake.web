@@ -170,6 +170,9 @@ function segCreate(eventid, segment) {
               })
               break;
             case 'string':
+              if (segment.sensordata[i].value.split('.').pop() == 'png') {
+                segment.sensordata[i].value = segment.sensordata[i].value.split('/').pop();
+              }
               client.query ({
                 text   : "INSERT INTO stringsensordata VALUES (DEFAULT, (SELECT id FROM segment WHERE id=$1), $2, $3)",
                 name   : "String Sensor Data Creation",
