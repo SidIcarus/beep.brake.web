@@ -44,7 +44,7 @@ passport.use(new LocalStrategy(
             return done(null, false, {message: "Incorrect pasword"});
           }
           console.log("Authenticated");
-          return done(null, results.rows[0]);
+          return done(null, {id: results.rows[0].id, username: results.rows[0].username, role: results.rows[0].role});
         });
       })
     }
@@ -55,7 +55,7 @@ passport.serializeUser(function(user, done) {
 })
 
 passport.deserializeUser(function(user, done) {
-    done(null, user);
+  done(null, user);
 });
 
 var auth = function(req, res, next) {

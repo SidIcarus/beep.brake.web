@@ -1,13 +1,8 @@
 <div class="panel panel-default col-sm-6 col-sm-offset-3" style="padding:20px">
-  <div class="input-group">
-    <label> Username
-    <input type="text" class="form-control" ng-model="user.username">
+  <form ng-submit="submit()">
+    <input type="text" class="form-control" placeholder="Username" ng-model="user.username">
+    <input type="password" class="form-control" placeholder="Password" ng-model="user.password">
+    <input class="btn btn-primary" type="submit" value="Log In">
   </div>
-  <div class="input-group">
-    <label> Password
-    <input type="password" class="form-control" ng-model="user.password">
-  </div>
-  <div class="input-group">
-    <input class="btn btn-primary" type="submit" value="Submit" ng-click="submit()">
-  </div>
+  </form>
 </div>

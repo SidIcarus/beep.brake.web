@@ -6,9 +6,7 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   	$http.get("/web/api/event/" + $routeParams.id).then(function(res) {
   		$scope.segments   = res.data.segments;
       $scope.segments.forEach(function(seg) {
-        console.log(seg);
         seg.segtime = buildDate(new Date(seg.segtime));
-        console.log(seg);
       })
   		$scope.sensorData = res.data.sensordata;
   	})
