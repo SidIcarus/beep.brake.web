@@ -1,5 +1,9 @@
 angular.module('beep.brake.dataCtrl', []).
 controller('dataCtrl', function($scope, $http, $location, $rootScope) {
+
+  $scope.sortBy = 'eventdate';
+  $scope.sortReverse = true;
+
   init = function() {
   	if ($rootScope.user.role == 'admin') {
   		$scope.$parent.loggedIn = true;
@@ -7,6 +11,15 @@ controller('dataCtrl', function($scope, $http, $location, $rootScope) {
   	$http.get("/web/api/events").then(function(res) {
   		$scope.events = res;
   	})
+  }
+
+  $scope.changeSort = function(type) {
+    $scope.sortBy = type;
+    if ($scope.sortReverse == true) {
+      $scope.sortReverse = false;
+    } else {
+      $scope.sortReverse = true;
+    }
   }
 
   $scope.viewEvent = function(id) {

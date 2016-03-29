@@ -15,7 +15,6 @@ controller('mainCtrl', function($scope, $http, $location, $rootScope) {
       })
         .then(function(res){
           $rootScope.user = (res.data);
-          console.log($rootScope.user);
           $location.url('dataView');
         },
         function(err) {

@@ -9,6 +9,7 @@ db.js
 # data files
 uploads/*
 events/*
+public/events/*
 
 # Runtime data
 pids

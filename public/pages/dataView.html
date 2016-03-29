@@ -1,13 +1,13 @@
 <div>
   <table class="table table-striped">
   	<tr>
-  		<td>User ID</td>
-  		<td>Hardware</td>
-  		<td>App Version</td>
-  		<td>OS Version</td>
-  		<td>Date</td>
+  		<td><a href="" ng-click="changeSort('id')">User ID</td>
+  		<td><a href="" ng-click="changeSort('hardware')">Hardware</td>
+  		<td><a href="" ng-click="changeSort('appversion')">App Version</td>
+  		<td><a href="" ng-click="changeSort('osversion')">OS Version</td>
+  		<td><a href="" ng-click="changeSort('eventdate')">Date</td>
   	</tr>
-    <tr ng-repeat="event in events.data" ng-click="viewEvent(event.id)">
+    <tr ng-repeat="event in events.data | orderBy:sortBy:sortReverse" ng-click="viewEvent(event.id)">
       <td> {{event.userid}} </td>
       <td> {{event.hardware}}</td>
       <td> {{event.appversion}}</td>

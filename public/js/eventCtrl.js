@@ -17,6 +17,9 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   	angular.forEach($scope.sensorData, function(data, info){
   		if (data.segid == id) {
   			$scope.currentSegData.push(data);
+        if (data.key == 'imagename') {
+          $scope.img_url = "./events/" + $routeParams.id + "/" + data.value;
+        }
   		}
   	})
   }
@@ -33,7 +36,8 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
       var m = addZero(time.getMinutes(), 2);
       var s = addZero(time.getSeconds(), 2);
       var ms = addZero(time.getMilliseconds(), 3);
-      return (h + ":" + m + ":" + s + ":" + ms);
+      var date = time.toDateString();
+      return (date + "  " + h + ":" + m + ":" + s + ":" + ms );
   } 
 
   init();

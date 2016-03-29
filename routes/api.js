@@ -80,7 +80,7 @@ function newEvent(data, oldfile) {
           }
 
           console.log("RENAMING FOLDER");
-          fs.rename("./events/" + oldfile, './events/' + results.rows[0].id, function(err) {
+          fs.rename("./public/events/" + oldfile, './public/events/' + results.rows[0].id, function(err) {
             if (err) {
               console.log(err);
               return;
@@ -100,8 +100,8 @@ function newEvent(data, oldfile) {
 router.post('/newFile', upload.single('file'), function(req, res, next) {
   var zip = new AdmZip(req.file.path);
 
-  zip.extractAllTo("./events/" + req.file.filename); 
-  fs.readdir("./events/" + req.file.filename, function(err, list) {
+  zip.extractAllTo("./public/events/" + req.file.filename); 
+  fs.readdir("./public/events/" + req.file.filename, function(err, list) {
     if (err){
       console.log(err);
       return res.status(500);
