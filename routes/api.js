@@ -107,7 +107,7 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
       return res.status(500);
     }
     list.forEach(function (file) {
-      fs.readFile(file, function(err, data) {
+      var data = fs.readFileSync('./public/events/' + req.file.filename + "/" + file)//, function(err, data) {
         console.log(file.toString());
         if (getExtension(file) == 'json') {
           
@@ -120,7 +120,7 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
           var result = newEvent(newJSON, req.file.filename) 
 
         }
-      })
+      //})
     })
   });
 
