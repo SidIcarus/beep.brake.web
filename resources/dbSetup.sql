@@ -51,4 +51,4 @@ CREATE TABLE webuser(
 	role text
 );
 
-INSERT INTO webuser VALUES(DEFAULT, "admin", "89e37195dde926e8c9e14e5ee986cabc48dcd39c5658edc6485d6dbf624fee5c", "admin");
+INSERT INTO webuser VALUES(DEFAULT, 'admin', '89e37195dde926e8c9e14e5ee986cabc48dcd39c5658edc6485d6dbf624fee5c', 'admin');
