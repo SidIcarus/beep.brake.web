@@ -1,18 +1,26 @@
 <div>
-  <table class="table table-striped">
-  	<tr>
-  		<td><a href="" ng-click="changeSort('id')">User ID</td>
-  		<td><a href="" ng-click="changeSort('hardware')">Hardware</td>
-  		<td><a href="" ng-click="changeSort('appversion')">App Version</td>
-  		<td><a href="" ng-click="changeSort('osversion')">OS Version</td>
-  		<td><a href="" ng-click="changeSort('eventdate')">Date</td>
-  	</tr>
-    <tr ng-repeat="event in events.data | orderBy:sortBy:sortReverse" ng-click="viewEvent(event.id)">
-      <td> {{event.userid}} </td>
-      <td> {{event.hardware}}</td>
-      <td> {{event.appversion}}</td>
-      <td> {{event.osversion}}</td>
-      <td> {{event.eventdate}} </td>
-    </tr>
-  </table>
+  <input type="test" class="form-control" placeholder="Search" ng-model="searchData">
+  <div class="panel">
+    <table class="table table-hover">
+    	<tr>
+    		<th><a href="" ng-click="changeSort('id')">User ID</a></th>
+    		<th><a href="" ng-click="changeSort('hardware')">Hardware</a></th>
+    		<th><a href="" ng-click="changeSort('appversion')">App Version</a></th>
+    		<th><a href="" ng-click="changeSort('osversion')">OS Version</a></th>
+    		<th><a href="" ng-click="changeSort('eventdate')">Date</a></th>
+    	</tr>
+      <tr dir-paginate="event in events.data | orderBy:sortBy:sortReverse | filter:searchData | itemsPerPage:10" ng-click="viewEvent(event.id)">
+        <td> {{event.userid}} </td>
+        <td> {{event.hardware}}</td>
+        <td> {{event.appversion}}</td>
+        <td> {{event.osversion}}</td>
+        <td> {{event.eventdate}} </td>
+      </tr>
+    </table>
+    <dir-pagination-controls
+       max-size="5"
+       direction-links="true"
+       boundary-links="true" >
+    </dir-pagination-controls>
+  </div>
 </div>

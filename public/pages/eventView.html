@@ -1,19 +1,22 @@
 <div class="col-sm-6">
-	<table class="table table-striped">
-		<tr>
-			<td>Segment Time</td>
-		</tr>
-	  <tr ng-repeat="seg in segments" ng-click="segSelect(seg.id)">
-	    <td> {{seg.segtime}} </td>
-	  </tr>
-	</table>
+  <div class="panel">
+    <table class="table table-hover">
+      <tr>
+        <th>Segment Time</th>
+      </tr>
+      <tr dir-paginate="seg in segments|itemsPerPage:15" ng-click="segSelect(seg.id)">
+        <td> {{seg.segtime}} </td>
+      </tr>
+    </table>
+    <dir-pagination-controls max-size="10" direction-links="true" boundary-links="true" ></dir-pagination-controls>
+  </div>
 </div>
 <div class="col-sm-6 panel">
-	<img ng-src="{{img_url}}">
-	<table class="table col-sm-6">
-	  <tr ng-repeat="sensor in currentSegData">
-	  	<td> {{sensor.key}} </td>
-	  	<td> {{sensor.value}} </td>
-	  </tr>
-	 </table>
+  <img ng-src="{{img_url}}">
+  <table class="table col-sm-6">
+    <tr ng-repeat="sensor in currentSegData">
+      <td> {{sensor.key}} </td>
+      <td> {{sensor.value}} </td>
+    </tr>
+   </table>
  </div>

@@ -3,6 +3,7 @@ var app = angular.module('beep.brake', [
 	'beep.brake.dataCtrl',
 	'beep.brake.eventCtrl',
 	'beep.brake.regCtrl',
+	'angularUtils.directives.dirPagination',
 	'ngRoute'
 	]);
 
