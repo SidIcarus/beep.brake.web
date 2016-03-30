@@ -9,7 +9,9 @@ var LocalStrategy = require('passport-local').Strategy;
 var session = require('express-session');
 var pg = require('pg');
 var dbString = require('./db.js');
+var crypto = require('crypto');
 var conString = dbString.dbString;
+var tempSalt = "beep.brake.salt";
 
 var routes = require('./routes/index');
 var api = require('./routes/api');
@@ -31,6 +33,7 @@ passport.use(new LocalStrategy(
           values : [username]
         }, function(err, results) {
           connect_done();
+          var saltHashPass = (crypto.createHash('sha256').update(password+tempSalt).digest('hex'));
           if(err) {
             console.log("Error")
             return done(err);
@@ -39,7 +42,7 @@ passport.use(new LocalStrategy(
             console.log("No users found");
             return done(null, false, {message: "User Not Found"});
           }
-          if (results.rows[0].password !== password) {
+          if (results.rows[0].password !== saltHashPass) {
             console.log("Incorrect Password");
             return done(null, false, {message: "Incorrect pasword"});
           }

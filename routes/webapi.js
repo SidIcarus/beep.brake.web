@@ -4,7 +4,9 @@ var pg = require('pg');
 var async = require('async');
 var multer = require('multer');
 var dbString = require('../db.js');
+var crypto = require('crypto');
 var conString = dbString.dbString;
+var tempSalt = "beep.brake.salt";
 
 
 router.post('/register', function(req, res) {
@@ -19,23 +21,23 @@ router.post('/register', function(req, res) {
       text   : 'SELECT EXISTS(SELECT 1 FROM webuser WHERE username=$1)',
       name   : 'Webuser Unique check',
       values : [newWebUser.username]
-    }, function(err, result) {
+    }, function(err, result) {  
       if (err) {
         done()
         console.log(err);
         res.status(500).send({"message": "Internal server error"});
         return;
       }
-
       if (result.rows[0].exists) {
         done();
         return res.status(400).send({"message": "User already registered"})
       } else {
+        var saltHashPass = (crypto.createHash('sha256').update(newWebUser.password+tempSalt).digest('hex'));
         console.log("Gonna add someone now");
         client.query({
           text   : 'INSERT INTO webuser VALUES(DEFAULT, $1, $2, $3)',
           name   : 'Webuser Registration',
-          values : [newWebUser.username, newWebUser.password, newWebUser.role]
+          values : [newWebUser.username, saltHashPass, newWebUser.role]
         }, function(err, results) {
           done();
           if (err) {
