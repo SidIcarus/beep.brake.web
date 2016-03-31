@@ -1,8 +1,15 @@
-angular.module('beep.brake.regCtrl', []).
-controller('regCtrl', function($scope, $http, $location, $rootScope) {
+angular.module('beep.brake.regCtrl', ['ngStorage']).
+controller('regCtrl', function($scope, $http, $location, $sessionStorage) {
   $scope.newUser = {};
   $scope.newUser.role = 'user';
   init = function() {
+    if (!$sessionStorage.user) {
+      $location.url('/');
+      return;
+    }
+    if ($sessionStorage.user.role == 'admin') {
+      $scope.$parent.loggedIn = true;
+    }
   	$http.get("/web/api/users").then(function(res) {
   		$scope.users = res.data;
   	})
@@ -30,7 +37,7 @@ controller('regCtrl', function($scope, $http, $location, $rootScope) {
 
   $scope.delete = function(id) {
     $scope.delFlag = false;
-    if ($rootScope.user.id == id) {
+    if ($sessionStorage.user.id == id) {
       //Don't allow admins to delete their own account
       $scope.delFlag = true;
       return;

@@ -1,11 +1,15 @@
-angular.module('beep.brake.dataCtrl', []).
-controller('dataCtrl', function($scope, $http, $location, $rootScope) {
+angular.module('beep.brake.dataCtrl', ['ngStorage']).
+controller('dataCtrl', function($scope, $http, $location, $rootScope, $sessionStorage) {
 
   $scope.sortBy = 'eventdate';
   $scope.sortReverse = true;
 
   init = function() {
-  	if ($rootScope.user.role == 'admin') {
+    if (!$sessionStorage.user) {
+      $location.url('/');
+      return;
+    }
+  	if ($sessionStorage.user.role == 'admin') {
   		$scope.$parent.loggedIn = true;
   	}
   	$http.get("/web/api/events").then(function(res) {

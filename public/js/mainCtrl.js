@@ -1,5 +1,5 @@
-angular.module('beep.brake.mainCtrl', []).
-controller('mainCtrl', function($scope, $http, $location, $rootScope) {
+angular.module('beep.brake.mainCtrl', ['ngStorage']).
+controller('mainCtrl', function($scope, $http, $location, $rootScope, $sessionStorage) {
   $scope.user = {};
   $scope.user.username = '';
   $scope.user.password = '';
@@ -14,7 +14,8 @@ controller('mainCtrl', function($scope, $http, $location, $rootScope) {
         password: $scope.user.password
       })
         .then(function(res){
-          $rootScope.user = (res.data);
+          $sessionStorage.user = (res.data);
+          //$rootScope.user = (res.data);
           $location.url('dataView');
         },
         function(err) {
@@ -22,5 +23,11 @@ controller('mainCtrl', function($scope, $http, $location, $rootScope) {
           return;
         });
       }
+  }
+
+  $scope.logout = function() {
+    $http.post('/logout')
+    delete $sessionStorage.user;
+    $location.url('/');
   }
 })

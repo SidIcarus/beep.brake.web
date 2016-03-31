@@ -4,24 +4,52 @@ var app = angular.module('beep.brake', [
 	'beep.brake.eventCtrl',
 	'beep.brake.regCtrl',
 	'angularUtils.directives.dirPagination',
+	'ngStorage',
 	'ngRoute'
 	]);
 
-var checkLoggedIn = function($location, $rootScope) {
-	if ($rootScope.user) {
-		return true;
-	} else {
-		$location.url('/');
-	}
+var checkLoggedIn = function($q, $timeout, $http, $location) {
+	var deferred = $q.defer();
+
+	$http.get('/loggedin').success(function(user) {
+		if (user !== '0') {
+			deferred.resolve();
+		} else {
+			deferred.reject();
+			$location.url('/');
+		}
+	})
+
+	return deferred.promise;
 }
 
-var isAdmin = function($location, $rootScope) {
-	if ($rootScope.user.role == 'admin') {
+var isAdmin = function($location, $sessionStorage) {
+	if (!$sessionStorage.user) {
+		$location.url('/');
+		return;
+	}
+	if ($sessionStorage.user.role == 'admin') {
 		return true;
 	} else {
 		$location.url('/dataView');
 	}
 }
+
+app.config(function($httpProvider) { 
+	$httpProvider.interceptors.push(function($q, $location) {
+		return {
+			response: function(res) {
+				return res;
+			},
+			responseError: function(res) {
+				if (res.status === 401) {
+					$location.url('/');
+				return $q.reject(res);
+				}
+			}
+		}
+	})
+})
 
 app.config(function($routeProvider) {
 	$routeProvider

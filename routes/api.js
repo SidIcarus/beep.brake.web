@@ -62,24 +62,21 @@ function newEvent(data, oldfile) {
       if (result.rows[0].exists) {
 
         //Parse and store event in db
-        console.log("Add event");
         client.query({ 
           text   : "INSERT INTO event VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5) RETURNING id",
           name   : "Event Creation",
           values : [newEvent.deviceid, newEvent.hardware, newEvent.appversion, newEvent.osversion, new Date(newEvent.eventdata  )]
         }, function(err, results) {
-
+          done();
           if (err) {
             console.log(err);
             return {"status" : 500};
           }
           //for each segment insert segment and insert all sensor data
           for (var s = 0; s < newEvent.segments.length; s++) {
-            console.log("starting seg");
             segCreate(results.rows[0].id, newEvent.segments[s]);
           }
 
-          console.log("RENAMING FOLDER");
           fs.rename("./public/events/" + oldfile, './public/events/' + results.rows[0].id, function(err) {
             if (err) {
               console.log(err);
@@ -108,7 +105,6 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
     }
     list.forEach(function (file) {
       var data = fs.readFileSync('./public/events/' + req.file.filename + "/" + file)//, function(err, data) {
-        console.log(file.toString());
         if (getExtension(file) == 'json') {
           
           try {
@@ -145,7 +141,6 @@ function segCreate(eventid, segment) {
         }
 
         for (var i = 0; i < segment.sensordata.length; i++) {
-          console.log("Inserting data");
           switch(typeof(segment.sensordata[i].value)) {
             case 'boolean':
               client.query({

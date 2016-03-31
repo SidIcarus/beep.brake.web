@@ -87,6 +87,15 @@ app.post('/login', passport.authenticate('local'), function(req, res) {
   res.send(req.user);
 });
 
+app.post('/logout', function(req, res) {
+  req.logOut();
+  res.send(200);
+})
+
+app.get('/loggedin', function(req, res) {
+  res.send(req.isAuthenticated() ? req.user : 0);
+})
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/*', function(req, res) {
   res.sendfile(__dirname + '/views/index.html')
