@@ -20,7 +20,6 @@ controller('dataCtrl', function($scope, $http, $location, $rootScope, $sessionSt
         } else { 
           ndate = moment(item.eventdate).format();
         }
-        console.log(typeof(ndate));
         dateArray = ndate.split('T');
         item.date = dateArray[0]
         item.time = dateArray[1]
