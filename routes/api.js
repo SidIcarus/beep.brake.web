@@ -118,7 +118,7 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
         }
       })
     });
-  catch (e) {
+  } catch (e) {
     console.log(e);
     res.send(500);
   }
