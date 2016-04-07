@@ -7,6 +7,7 @@ var dbString = require('../db.js');
 var AdmZip = require('adm-zip');
 var fs = require('fs');
 var path = require('path');
+var moment = require('moment-timezone');
 var conString = dbString.dbString;
 var upload = multer({ dest: './uploads/'});
 
@@ -44,7 +45,6 @@ router.post('/newDevice', function(req, res) {
   });
 });
 
-//router.post('/newEvent', function(req,res) {
 function newEvent(data, oldfile) {
   var newEvent = data;
   if (!newEvent.deviceid) {
@@ -63,9 +63,9 @@ function newEvent(data, oldfile) {
 
         //Parse and store event in db
         client.query({ 
-          text   : "INSERT INTO event VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5) RETURNING id",
+          text   : "INSERT INTO event   VALUES (DEFAULT, (SELECT deviceid FROM appuser WHERE deviceid=$1), $2, $3, $4, (SELECT id FROM configuration WHERE id=1), $5, $6) RETURNING id",
           name   : "Event Creation",
-          values : [newEvent.deviceid, newEvent.hardware, newEvent.appversion, newEvent.osversion, new Date(newEvent.eventdata  )]
+          values : [newEvent.deviceid, newEvent.hardware, newEvent.appversion, newEvent.osversion, moment.tz(newEvent.eventdata, newEvent.timezone), newEvent.timezone]
         }, function(err, results) {
           done();
           if (err) {
@@ -95,18 +95,18 @@ function newEvent(data, oldfile) {
 };
   
 router.post('/newFile', upload.single('file'), function(req, res, next) {
-  var zip = new AdmZip(req.file.path);
+  try{
+    var zip = new AdmZip(req.file.path);
 
-  zip.extractAllTo("./public/events/" + req.file.filename); 
-  fs.readdir("./public/events/" + req.file.filename, function(err, list) {
-    if (err){
-      console.log(err);
-      return res.status(500);
-    }
-    list.forEach(function (file) {
-      var data = fs.readFileSync('./public/events/' + req.file.filename + "/" + file)//, function(err, data) {
+    zip.extractAllTo("./public/events/" + req.file.filename); 
+    fs.readdir("./public/events/" + req.file.filename, function(err, list) {
+      if (err){
+        console.log(err);
+        return res.status(500);
+      }
+      list.forEach(function (file) {
+        var data = fs.readFileSync('./public/events/' + req.file.filename + "/" + file)
         if (getExtension(file) == 'json') {
-          
           try {
             var newJSON = JSON.parse(data);
           }catch (e) {
@@ -116,9 +116,13 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
           var result = newEvent(newJSON, req.file.filename) 
 
         }
-      //})
-    })
-  });
+      })
+    });
+  catch (e) {
+    console.log(e);
+    res.send(500);
+  }
+
 
   res.status(204).end();
 })

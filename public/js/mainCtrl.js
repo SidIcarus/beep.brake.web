@@ -8,14 +8,12 @@ controller('mainCtrl', function($scope, $http, $location, $rootScope, $sessionSt
   $scope.submit = function() {
     if ($scope.user.username != '' && $scope.user.password != '') {
       $scope.errFlag = false;
-      //TODO: hash password before sending it
       $http.post('/login', {
         username: $scope.user.username, 
         password: $scope.user.password
       })
         .then(function(res){
           $sessionStorage.user = (res.data);
-          //$rootScope.user = (res.data);
           $location.url('dataView');
         },
         function(err) {

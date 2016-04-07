@@ -33,7 +33,6 @@ router.post('/register', function(req, res) {
         return res.status(400).send({"message": "User already registered"})
       } else {
         var saltHashPass = (crypto.createHash('sha256').update(newWebUser.password+tempSalt).digest('hex'));
-        console.log("Gonna add someone now");
         client.query({
           text   : 'INSERT INTO webuser VALUES(DEFAULT, $1, $2, $3)',
           name   : 'Webuser Registration',

@@ -8,17 +8,19 @@
     		<th><a href="" ng-click="changeSort('appversion')">App Version</a></th>
     		<th><a href="" ng-click="changeSort('osversion')">OS Version</a></th>
     		<th><a href="" ng-click="changeSort('eventdate')">Date</a></th>
+        <th><a href="" ng-click="changeSort('time')">Time</a></th>
     	</tr>
-      <tr dir-paginate="event in events.data | orderBy:sortBy:sortReverse | filter:searchData | itemsPerPage:10" ng-click="viewEvent(event.id)">
+      <tr dir-paginate="event in events | orderBy:sortBy:sortReverse | filter:searchData | itemsPerPage:10" ng-click="viewEvent(event.id, event.timezone)">
         <td> {{event.userid}} </td>
         <td> {{event.hardware}}</td>
         <td> {{event.appversion}}</td>
         <td> {{event.osversion}}</td>
-        <td> {{event.eventdate}} </td>
+        <td> {{event.date}} </td>
+        <td> {{event.time}} </td>
       </tr>
     </table>
     <dir-pagination-controls
-       max-size="5"
+       max-size="10"
        direction-links="true"
        boundary-links="true" >
     </dir-pagination-controls>

@@ -2,11 +2,12 @@ angular.module('beep.brake.eventCtrl', []).
 controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   $scope.currentSegData = []
   $scope.loggedIn = $rootScope.user;
+  timezone = $scope.$parent.tz;
   init = function() {
   	$http.get("/web/api/event/" + $routeParams.id).then(function(res) {
   		$scope.segments   = res.data.segments;
       $scope.segments.forEach(function(seg) {
-        seg.segtime = buildDate(new Date(seg.segtime));
+        seg.segtime = moment(seg.segtime).tz(timezone).format('HH:mm:ss:SSS ZZ');
       })
   		$scope.sensorData = res.data.sensordata;
   	})
@@ -23,22 +24,6 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   		}
   	})
   }
-
-  function addZero(x,n) {
-    while (x.toString().length < n) {
-        x = "0" + x;
-    }
-    return x;
-  }
-
-  function buildDate(time) {
-      var h = addZero(time.getHours(), 2);
-      var m = addZero(time.getMinutes(), 2);
-      var s = addZero(time.getSeconds(), 2);
-      var ms = addZero(time.getMilliseconds(), 3);
-      var date = time.toDateString();
-      return (date + "  " + h + ":" + m + ":" + s + ":" + ms );
-  } 
 
   init();
 })

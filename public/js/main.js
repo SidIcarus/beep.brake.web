@@ -5,6 +5,7 @@ var app = angular.module('beep.brake', [
 	'beep.brake.regCtrl',
 	'angularUtils.directives.dirPagination',
 	'ngStorage',
+	'angularMoment',
 	'ngRoute'
 	]);
 

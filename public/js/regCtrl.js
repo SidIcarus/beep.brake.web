@@ -22,8 +22,7 @@ controller('regCtrl', function($scope, $http, $location, $sessionStorage) {
       console.log("Fill out all fields");
       return;
     } else {
-      //hash password
-      hashPass = $scope.newUser.password //.hash
+      hashPass = $scope.newUser.password;
       $http.post('/web/api/register', {
         username: $scope.newUser.username,
         password: hashPass,
@@ -38,7 +37,7 @@ controller('regCtrl', function($scope, $http, $location, $sessionStorage) {
   $scope.delete = function(id) {
     $scope.delFlag = false;
     if ($sessionStorage.user.id == id) {
-      //Don't allow admins to delete their own account
+      //Don't allow admins to delete their own account, flag an error to the user
       $scope.delFlag = true;
       return;
     }
