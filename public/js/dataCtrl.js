@@ -37,8 +37,7 @@ controller('dataCtrl', function($scope, $http, $location, $rootScope, $sessionSt
   }
 
   $scope.viewEvent = function(id, timezone) {
-    $scope.$parent.tz = timezone;
-  	$location.path('/dataView/' + id);
+  	$location.path('/dataView/' + id + "/" + timezone);
   }
 
   init();

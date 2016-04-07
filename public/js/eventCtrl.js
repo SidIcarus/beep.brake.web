@@ -2,7 +2,8 @@ angular.module('beep.brake.eventCtrl', []).
 controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   $scope.currentSegData = []
   $scope.loggedIn = $rootScope.user;
-  timezone = $scope.$parent.tz;
+  timezone = $routeParams.tz;
+  
   init = function() {
   	$http.get("/web/api/event/" + $routeParams.id).then(function(res) {
   		$scope.segments   = res.data.segments;

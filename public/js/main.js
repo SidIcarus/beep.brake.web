@@ -67,7 +67,7 @@ app.config(function($routeProvider) {
 			}
 		})
 
-		.when('/dataView/:id', {
+		.when('/dataView/:id/:tz*', {
 			templateUrl : 'pages/eventView.html',
 			controller  : 'eventCtrl',
 			resolve     : {	

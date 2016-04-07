@@ -7,6 +7,7 @@ var dbString = require('../db.js');
 var AdmZip = require('adm-zip');
 var fs = require('fs');
 var path = require('path');
+var unzip = require('unzip2');
 var moment = require('moment-timezone');
 var conString = dbString.dbString;
 var upload = multer({ dest: './uploads/'});
@@ -48,7 +49,7 @@ router.post('/newDevice', function(req, res) {
 function newEvent(data, oldfile) {
   var newEvent = data;
   if (!newEvent.deviceid) {
-      return {"status": 401, "message": "No deviceId provided"};
+    return 400;
   }
 
   pg.connect(conString, function(err, client, done) {
@@ -88,7 +89,7 @@ function newEvent(data, oldfile) {
         }) 
       } else {
         done();
-        return {"message" : "Device not registered", "status" : 401}
+        return 400;
       }
     });
   });
@@ -96,33 +97,32 @@ function newEvent(data, oldfile) {
   
 router.post('/newFile', upload.single('file'), function(req, res, next) {
   try{
-    var zip = new AdmZip(req.file.path);
-
-    zip.extractAllTo("./public/events/" + req.file.filename); 
-    fs.readdir("./public/events/" + req.file.filename, function(err, list) {
-      if (err){
-        console.log(err);
-        return res.status(500);
-      }
-      list.forEach(function (file) {
-        var data = fs.readFileSync('./public/events/' + req.file.filename + "/" + file)
-        if (getExtension(file) == 'json') {
-          try {
-            var newJSON = JSON.parse(data);
-          }catch (e) {
-            console.log(e);
+    var filefolder = req.file.originalname.split('.')[0];
+    fs.createReadStream(req.file.path).pipe(unzip.Extract({path: './public/events/'+ filefolder}))
+      .on('close', function() {}) //Might be a problem in the future.
+      .on('close', function() {
+        fs.readdir("./public/events/" + filefolder, function(err, list) {
+          if (err){
+            console.log(err);
+            return res.status(500);
           }
-
-          var result = newEvent(newJSON, req.file.filename) 
-
-        }
-      })
+          list.forEach(function (file) {
+            var data = fs.readFileSync('./public/events/' + filefolder + "/" + file)
+            if (getExtension(file) == 'json') {
+              try {
+                var newJSON = JSON.parse(data);
+                var result = newEvent(newJSON, filefolder) 
+              }catch (e) {
+                console.log(e);
+              }
+            }
+          })  
+        });
     });
   } catch (e) {
     console.log(e);
     res.send(500);
   }
-
 
   res.status(204).end();
 })
