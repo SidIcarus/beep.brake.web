@@ -99,7 +99,6 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
   try{
     var filefolder = req.file.originalname.split('.')[0];
     fs.createReadStream(req.file.path).pipe(unzip.Extract({path: './public/events/'+ filefolder}))
-      .on('close', function() {}) //Might be a problem in the future.
       .on('close', function() {
         fs.readdir("./public/events/" + filefolder, function(err, list) {
           if (err){
@@ -118,7 +117,8 @@ router.post('/newFile', upload.single('file'), function(req, res, next) {
             }
           })  
         });
-    });
+    })
+    .on('close', function() {});
   } catch (e) {
     console.log(e);
     res.send(500);
