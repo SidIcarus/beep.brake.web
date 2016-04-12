@@ -14,7 +14,7 @@ CREATE TABLE event(
 	appversion text,
 	osversion text,
 	config integer REFERENCES configuration,
-	eventdate timestamp with timezone
+	eventdate timestamp with time zone
 );
 
 CREATE TABLE segment(
