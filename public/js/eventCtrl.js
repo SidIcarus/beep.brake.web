@@ -35,7 +35,13 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   }
 
   $scope.segSelect = function(id) {
-    //search $scope.segments for the index via id?
+    $scope.segments.forEach(function(seg) {
+      if (seg.id == id) {
+        seg.active = true;
+      } else {
+        seg.active = false;
+      }
+    });
     if ((id - $scope.segments[0].id) >= $scope.segments.length) {
       return;
     }

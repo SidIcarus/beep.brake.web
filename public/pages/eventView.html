@@ -5,7 +5,7 @@
         <th>Segment Time</th>
       </tr>
       <tr dir-paginate="seg in segments|itemsPerPage:15" ng-click="segSelect(seg.id)">
-        <td> {{seg.segtime}} </td>
+        <td ng-class="{'info': seg.active}"> {{seg.segtime}} </td>
       </tr>
     </table>
     <dir-pagination-controls max-size="10" direction-links="true" boundary-links="true" ></dir-pagination-controls>
