@@ -7,9 +7,23 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
 
   $scope.keys = [];
   $scope.keys.push({ code: 13, action: function() { $scope.open( $scope.focusIndex ); }});
-  $scope.keys.push({ code: 38, action: function() { $scope.currentIndex--, $scope.segSelect($scope.currentIndex--); }});
-  $scope.keys.push({ code: 40, action: function() { $scope.currentIndex++; $scope.segSelect($scope.currentIndex++); }});
+  $scope.keys.push({ code: 38, action: function() { subIndex(); }});
+  $scope.keys.push({ code: 40, action: function() { addIndex(); }});
   
+  subIndex = function() {
+    if (($scope.currentIndex - $scope.segments[0].id) > 0) {
+      $scope.currentIndex--;
+      $scope.segSelect($scope.currentIndex);
+    }
+  }
+
+  addIndex = function() {
+    if ($scope.currentIndex < $scope.segments[$scope.segments.length-1].id) {
+      $scope.currentIndex++;
+      $scope.segSelect($scope.currentIndex);
+    }
+  }
+
   init = function() {
   	$http.get("/web/api/event/" + $routeParams.id).then(function(res) {
   		$scope.segments   = res.data.segments;
@@ -26,7 +40,7 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
       return;
     }
     $scope.currentIndex = id;
-  	$scope.currentSegData = []
+  	$scope.currentSegData = [];
   	angular.forEach($scope.sensorData, function(data, info){
   		if (data.segid == id) {
   			$scope.currentSegData.push(data);
