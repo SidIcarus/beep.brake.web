@@ -9,6 +9,14 @@ var app = angular.module('beep.brake', [
 	'ngRoute'
 	]);
 
+app.directive('keyTrap', function() {
+  return function( scope, elem ) {
+    elem.bind('keydown', function( event ) {
+      scope.$broadcast('keydown', { code: event.keyCode } );
+    });
+  };
+});
+
 var checkLoggedIn = function($q, $timeout, $http, $location) {
 	var deferred = $q.defer();
 
