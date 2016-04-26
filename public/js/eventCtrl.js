@@ -12,9 +12,8 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   
   subIndex = function() {
     if (currentSelection > 0) {
-      console.log("Going down");
       currentSelection--;
-      $scope.segSelectIndex(currentSelection);
+      $scope.segSelectIndex(currentSelection);  
     }
   }
 
