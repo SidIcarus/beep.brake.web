@@ -2,7 +2,7 @@ angular.module('beep.brake.eventCtrl', []).
 controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   $scope.currentSegData = []
   $scope.loggedIn = $rootScope.user;
-  $scope.currentSelection = 0;
+  currentSelection = 0;
   timezone = $routeParams.tz;
 
   $scope.keys = [];
@@ -11,16 +11,17 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   $scope.keys.push({ code: 40, action: function() { addIndex(); }});
   
   subIndex = function() {
-    if (($scope.currentIndex - $scope.segments[0].id) > 0) {
-      $scope.currentIndex--;
-      $scope.segSelect($scope.currentIndex);
+    if (currentSelection > 0) {
+      console.log("Going down");
+      currentSelection--;
+      $scope.segSelectIndex(currentSelection);
     }
   }
 
   addIndex = function() {
-    if ($scope.currentIndex < $scope.segments[$scope.segments.length-1].id) {
-      $scope.currentIndex++;
-      $scope.segSelect($scope.currentIndex);
+    if (currentSelection < $scope.segments.length -1) {
+      currentSelection++;
+      $scope.segSelectIndex(currentSelection);
     }
   }
 
@@ -34,27 +35,47 @@ controller('eventCtrl', function($scope, $http, $routeParams, $rootScope) {
   	})
   }
 
-  $scope.segSelect = function(id) {
-    $scope.segments.forEach(function(seg) {
-      if (seg.id == id) {
+  $scope.segSelectIndex = function(index) {
+    $scope.segments.forEach(function(seg, key) {
+      if (key == currentSelection) {
         seg.active = true;
       } else {
         seg.active = false;
       }
-    });
+
+      getSegmentData();
+    })
+  }
+
+  $scope.segSelectId = function(id) {
+    $scope.segments.forEach(function(seg, key) {
+      if (seg.id == id) {
+        seg.active = true;
+        currentSelection = key;
+      } else {
+        seg.active = false;
+      }
+    })
+
     if ((id - $scope.segments[0].id) >= $scope.segments.length) {
+      console.log("ERROR OF SOME KIND?");
       return;
     }
-    $scope.currentIndex = id;
-  	$scope.currentSegData = [];
-  	angular.forEach($scope.sensorData, function(data, info){
-  		if (data.segid == id) {
-  			$scope.currentSegData.push(data);
+
+    getSegmentData();
+
+  }
+
+  getSegmentData = function() {
+    $scope.currentSegData = [];
+    angular.forEach($scope.sensorData, function(data) {
+      if (data.segid == $scope.segments[currentSelection].id) {
+        $scope.currentSegData.push(data);
         if (data.key == 'imagename') {
           $scope.img_url = "./events/" + $routeParams.id + "/" + data.value;
         }
-  		}
-  	})
+      }
+    })
   }
 
   $scope.$on('keydown', function( msg, obj ) {
