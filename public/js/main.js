@@ -12,6 +12,10 @@ var app = angular.module('beep.brake', [
 app.directive('keyTrap', function() {
   return function( scope, elem ) {
     elem.bind('keydown', function( event ) {
+      if (event.keyCode == 40 || event.keyCode == 38)
+      	{      
+      		event.preventDefault();
+      	}
       scope.$broadcast('keydown', { code: event.keyCode } );
     });
   };
