@@ -24,7 +24,7 @@ controller('regCtrl', function($scope, $http, $location, $sessionStorage) {
     } else {
       hashPass = $scope.newUser.password;
       $http.post('/web/api/register', {
-        username: $scope.newUser.username,
+        username: $scope.newUser.username.toLowerCase(),
         password: hashPass,
         role    : $scope.newUser.role
       })

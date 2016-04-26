@@ -9,7 +9,7 @@ controller('mainCtrl', function($scope, $http, $location, $rootScope, $sessionSt
     if ($scope.user.username != '' && $scope.user.password != '') {
       $scope.errFlag = false;
       $http.post('/login', {
-        username: $scope.user.username, 
+        username: $scope.user.username.toLowerCase(), 
         password: $scope.user.password
       })
         .then(function(res){
@@ -26,6 +26,7 @@ controller('mainCtrl', function($scope, $http, $location, $rootScope, $sessionSt
   $scope.logout = function() {
     $http.post('/logout')
     delete $sessionStorage.user;
+    $scope.loggedIn = false;
     $location.url('/');
   }
 })
