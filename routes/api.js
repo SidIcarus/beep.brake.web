@@ -31,12 +31,12 @@ router.post('/newDevice', function(req, res) {
     }, function(err, result) {
       if (result.rows[0].exists) {
         done();
-        return res.status(400).send({"message" : "Device already registered"})
+        return res.status(409).send({"message" : "Device already registered"})
       } else {
         client.query({
           text   : "INSERT INTO appuser VALUES($1)",
           name   : "Device-Registration",
-          values : [req.body.deviceId] 
+          values : [req.body.deviceid] 
         }, function(err, result) {
           res.status(201).send({"message" : "Device Registered"})
           done();
